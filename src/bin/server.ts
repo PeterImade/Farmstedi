@@ -80,7 +80,7 @@ function onListening() {
     ? `pipe ${addr}`
     : `port ${addr?.port}`;
 
-    console.log(`server listening`)
+    console.log(`server listening on PORT: ${ port }`)
 
     // Start database 
 

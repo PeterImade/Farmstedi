@@ -5,7 +5,7 @@ import { config } from "dotenv"
 config() 
 import Redis from "ioredis";
 
-const REDIS_HOST: string = process.env.REDIS_HOST || ""
+const REDIS_HOST: string = process.env.REDIS_HOST || '127.0.0.1'
 const REDIS_PORT: number = parseInt( process.env.REDIS_PORT as string ) || 6379
 
 
