@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  farmstedi:
+    image: t2
+    ports:
+      - "3000:3000"
+    volumes:
+      - C:\Users\OGAGAOGHENE\Documents\Professional\Farmstedi:/app
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis  # Use the service name as the host
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"

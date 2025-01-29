@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "tsc --build",
-    "start": "node ./dist/bin/server.js",
-    "start:dev": "nodemon ./src/bin/server.ts",
+    "start": "nodemon -L ./dist/bin/server.js",
+    "dev": "nodemon ./src/bin/server.ts",
     "test": "test"
   },
   "repository": {
@@ -37,7 +37,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
     "@types/pino": "^7.0.5",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   },
