@@ -6,6 +6,18 @@ import { RecommendPlants_Req } from "./cropRecommendation.dto"
 config() 
 
 
+interface PlantData 
+{
+    averageTemperature: number;
+    totalPrecipitation: number;
+    longitude: number;
+    latitude: number; 
+    soilType: string, 
+    plants: string[],
+    numberOfMonths: number
+}
+
+
 export class CropRecommendationService
 {
     private plantRecommendationModel: GoogleGeminiClient
@@ -14,6 +26,7 @@ export class CropRecommendationService
     {
         this.plantRecommendationModel = new GoogleGeminiClient() 
     }
+
 
     async recommendCropsToPlant( farmData: RecommendPlants_Req )
     {
@@ -34,61 +47,12 @@ export class CropRecommendationService
             console.log(`The predicted temperature for Long:${longitude} and Lat:${latitude} is: ${ predictedTemperature } *C`)
             console.log(`The predicted precipitation for Long:${longitude} and Lat:${latitude} is: ${ predictedPrecipitation} *C`)
 
+            const plantData: PlantData = { latitude, longitude, averageTemperature: predictedTemperature, totalPrecipitation: predictedPrecipitation, plants, soilType, numberOfMonths: 3}
+
             // Generate AI Recommendations Based on {User Provided Data} and {Temperature & Precipitation  Data}
-            
-            const taskDescription = "Generating Plant Recommendation"
-            const systemMessage = `Your Role: You are an intelligent AI system that takes an array of JSON input of the structure:
-            [ 
-                {
-                    "longitude": ${ longitude},
-                    "latitude": ${ latitude },
-                    "temperature": ${ predictedTemperature }°C,
-                    "soilType": ${ soilType },
-                    "plants": ${ plants }
-                }
-            ]
+            const plantRecommendations:any = await this.generatePlantRecommendations( plantData ) 
 
-            And then Analyzes each plant object in the given array seperately to determine if it is suitable to plant.
-            Note: Each of the plant provided in the input array must have it's own seperate object in the output array
-            Note: Your Response must be 100% JSON. 
-            Important: do not add """json """ to the output
-            Your Response will be strictly in JSON format, following this structure: 
-            { recommendations: [{
-                "plantName": "plant name here",
-                "temperature":
-                {
-                    "score": 1-5, // 5 being the best score
-                    "msg":" your message about the temperature condition for the plant"
-                },
-                "location":
-                {
-                    "score": 1-5, // 5 being the best score
-                    "msg":" your message about the location of which the plant is intended to be cultivated" 
-                },
-                "soil":
-                {
-                    "score": 1-5, // 5 being the best score
-                    "msg":" your message about the soil of which the plant is intended to be cultivated "
-                },
-                "economics":
-                {
-                    "msg":" your message about the economics of the plant " 
-                }
-            }
-            ] }
-            `
-            const humanMessage = `
-            {
-                "longitude": ${ longitude},
-                "latitude": ${ latitude },
-                "temperature": ${ predictedTemperature }°C,
-                "soilType": ${ soilType },
-                "plants": ${ plants }
-            }
-            
-            `
 
-            const plantRecommendations = await this.plantRecommendationModel.generateRecommendations( taskDescription, systemMessage, humanMessage) 
             function extractJson( text: string ) {
                 const match = text.match(/```json\s*([\s\S]*?)\s*```/);
                 return match ? match[1] : "";
@@ -96,6 +60,7 @@ export class CropRecommendationService
 
             var res = extractJson( plantRecommendations)
             res = JSON.parse( res ) 
+
             console.log( typeof res)
             console.log( res )
             return res
@@ -109,10 +74,73 @@ export class CropRecommendationService
     }
 
 
-    // plants provided, determine optimal temperature ranges 
-    // also determine precipitation amount 
-    // Analyse Historic Temperature 
-    // Determine If Temperature Okay 
-    // Suggest other plants that go with the temperature
+    async generatePlantRecommendations( plantData: PlantData )
+    {
+        try 
+        {
+
+            const CROP_RECOMMENDATION_PROMPT: string = `
+
+            SYSTEM: You are an AI system that give's advise and recommendations on the cultivation of a plant. 
+
+            You will be given a Json containing: 
+            - the coordinates of the farm
+            - the predicted average temperature of the farm for a given number of months 
+            - the number of months for which the temperature was predicted 
+            - the predicted total precipitation for the number of months 
+            - farm soil type
+            - plant(s)  intended to be cultivated 
+
+            You will then analyze the the given data and return a summary, structured as a json response in the form 
+            {
+            "climate": {
+                "avgTemperature": "summary of average temperature suitability",
+                "totalPrecipitation": "summary of the total precipitation suitability"
+            },
+            "soil": {
+                "type": "summary of you suggestion for the soil type",
+                "phValue": "summary of the ideal pH range for the plant"
+            },
+            "irrigation": {
+                "technique": " ideal irrigation method summary",
+                "waterQuality": "ideal type of water for the plants based on its constituent",
+                "irrigationSchedule": "ideal irrigation schedule for plant"
+            },
+            "pestAndDiseases": {
+                "commonPests": "common pests that affects plant",
+                "commonPestsMitigation": "mitigation summary",
+                "commonDiseases": " common diseases affecting plant",
+                "commonDiseasesMitigation": "mitigation summary"
+            }
+            }
+
+
+            Formatting Instructions: 
+            - You must only return a json 
+            - The json you return must follow the json response structure specified
+
+
+            USER: 
+            {
+                "averageTemperature": ${ plantData.averageTemperature }, 
+                "totalPrecipitation": ${ plantData.totalPrecipitation}, 
+                "longitude": ${ plantData.longitude},
+                "latitude": ${ plantData.latitude},
+                "soilType": ${ plantData.soilType}, 
+                "plants": ${ plantData.plants },
+                "numberOfMonths": ${ plantData.numberOfMonths } 
+            }
+            `
+
+            const result = await this.plantRecommendationModel.generateRecommendations( CROP_RECOMMENDATION_PROMPT )
+            return result 
+
+        }
+        catch(e: any)
+        {
+            console.log("Error occured while analyzing plant data")
+            console.log(e) 
+        }
+    }
 
 }

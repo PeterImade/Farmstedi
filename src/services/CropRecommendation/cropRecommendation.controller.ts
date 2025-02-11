@@ -28,6 +28,8 @@ export default class CropRecommendationController
     {
         try 
         {
+            // Set timeout 
+            res.setTimeout(100000)
             const farmData = req.body
             const plantRecommendations = await this.cropRecommendationService.recommendCropsToPlant( farmData ) 
             

@@ -24,19 +24,12 @@ export class GoogleGeminiClient
     }
 
 
-    async generateRecommendations( taskDescription: string, systemMessage: string, humanMessage: string ): Promise<any>
+    async generateRecommendations(  prompt: string ): Promise<any>
     {
         try 
         {
-                console.log( taskDescription) 
 
-                const s_message = new SystemMessage({ content: systemMessage })
-                const h_message = new HumanMessage({ content: humanMessage})
-
-                const recommendations = await this.llm.invoke([
-                                    s_message,
-                                    h_message
-                                ])
+                const recommendations = await this.llm.invoke( prompt)
                 return recommendations.content
         }
         catch(e: any)
