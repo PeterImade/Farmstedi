@@ -76,7 +76,7 @@ Create a `.env` file and define the necessary environment variables:
 NODE_ENV=development 
 
 # Database
-DB_URI=############################################3
+DB_URI=############################################
 
 # Redis 
 REDIS_HOST=localhost
@@ -105,10 +105,10 @@ Example:
 
 | Method | Endpoint       | Description         |
 |--------|--------------|---------------------|
-| GET    | /api/users   | Get all users      |
-| POST   | /api/users   | Create a new user  |
-| PUT    | /api/users/:id | Update a user     |
-| DELETE | /api/users/:id | Delete a user     |
+| GET    | /api/v1/auth/signup   | Signup    |
+| POST   | /api/v1/auth/signin  | Signin  |
+| PUT    | /api/v1/auth/signout | Signout   |
+| DELETE | /api/v1/crop/recommendations | PlantRecommendation    |
 
 ## Project Structure
 
