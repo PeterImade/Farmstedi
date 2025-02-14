@@ -76,7 +76,7 @@ Create a `.env` file and define the necessary environment variables:
 NODE_ENV=development 
 
 # Database
-DB_URI=Remote or local URL
+DB_URI=##################################
 
 # Redis 
 REDIS_HOST=localhost
