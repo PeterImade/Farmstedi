@@ -76,7 +76,7 @@ Create a `.env` file and define the necessary environment variables:
 NODE_ENV=development 
 
 # Database
-DB_URI=mongodb+srv://farmstedi:woZ4Jsv0UYp3WCAw@cluster0.poem7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+DB_URI=Remote or local URL
 
 # Redis 
 REDIS_HOST=localhost
