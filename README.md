@@ -108,7 +108,7 @@ Example:
 | GET    | /api/v1/auth/signup   | Signup    |
 | POST   | /api/v1/auth/signin  | Signin  |
 | PUT    | /api/v1/auth/signout | Signout   |
-| DELETE | /api/v1/crop/recommendations | PlantRecommendation    |
+| POST | /api/v1/crop/recommendations | PlantRecommendation    |
 
 ## Project Structure
 
